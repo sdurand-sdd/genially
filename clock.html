@@ -3,35 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Horloge Genially Proportionnelle</title>
+  <title>Horloge Genially avec Graduations</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: transparent; /* Fond transparent pour Genially */
+      background-color: transparent;
       overflow: hidden;
     }
     
-    /* L'horloge occupe 90% de la plus petite dimension de l'iframe */
+    .clock-container {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      container-type: size; 
+    }
+    
     .clock {
-      width: 90vmin;
-      height: 90vmin;
+      width: 90cqmin;
+      height: 90cqmin;
       background-color: #ffffff;
-      border: 2.5vmin solid #000000;
+      border: 2.5cqmin solid #000000;
       border-radius: 50%;
       position: relative;
-      box-shadow: 0 1vmin 3vmin rgba(0,0,0,0.1);
+      box-shadow: 0 1cqmin 3cqmin rgba(0,0,0,0.1);
       box-sizing: border-box;
     }
     
-    /* Plot central noir */
     .center-nut {
-      width: 3.5vmin;
-      height: 3.5vmin;
+      width: 3.5cqmin;
+      height: 3.5cqmin;
       background-color: #000000;
       border-radius: 50%;
       position: absolute;
@@ -41,10 +51,9 @@
       z-index: 10;
     }
     
-    /* Plot central rouge */
     .center-nut-red {
-      width: 1.5vmin;
-      height: 1.5vmin;
+      width: 1.5cqmin;
+      height: 1.5cqmin;
       background-color: #ff0000;
       border-radius: 50%;
       position: absolute;
@@ -54,7 +63,7 @@
       z-index: 11;
     }
     
-    /* Configuration des chiffres proportionnels */
+    /* Structure pour les chiffres */
     .number {
       position: absolute;
       width: 100%;
@@ -62,18 +71,19 @@
       text-align: center;
       font-family: 'Arial', sans-serif;
       font-weight: bold;
-      font-size: 9vmin; /* Taille proportionnelle à l'horloge */
+      font-size: 8.5cqmin; /* Légèrement réduit pour laisser de la place aux tirets */
       color: #000000;
       transform-origin: center;
       box-sizing: border-box;
+      z-index: 3;
     }
     
     .number span {
       display: block;
-      padding-top: 3.5vmin; /* Espacement intérieur proportionnel */
+      padding-top: 6cqmin; /* Descend les chiffres sous les tirets */
     }
     
-    /* Rotation et contre-rotation des chiffres pour rester droits */
+    /* Orientations des chiffres */
     .n1  { transform: rotate(30deg); }  .n1 span  { transform: rotate(-30deg); }
     .n2  { transform: rotate(60deg); }  .n2 span  { transform: rotate(-60deg); }
     .n3  { transform: rotate(90deg); }  .n3 span  { transform: rotate(-90deg); }
@@ -87,70 +97,116 @@
     .n11 { transform: rotate(330deg); } .n11 span { transform: rotate(-330deg); }
     .n12 { transform: rotate(0deg); }   .n12 span { transform: rotate(0deg); }
 
-    /* Aiguilles proportionnelles */
+    /* Structure pour les tirets (générés en JavaScript) */
+    .mark {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform-origin: center;
+      z-index: 2;
+    }
+    .mark::after {
+      content: '';
+      position: absolute;
+      top: 1cqmin;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #000000;
+    }
+    /* Style des petits tirets (minutes) */
+    .mark.minute::after {
+      width: 0.3cqmin;
+      height: 1.5cqmin;
+      opacity: 0.6;
+    }
+    /* Style des gros tirets (heures) */
+    .mark.hour::after {
+      width: 0.8cqmin;
+      height: 3cqmin;
+      opacity: 1;
+    }
+
+    /* Aiguilles */
     .hand {
       position: absolute;
       bottom: 50%;
       left: 50%;
       transform-origin: bottom center;
-      border-radius: 1vmin;
+      border-radius: 1cqmin;
     }
     
     .hour-hand {
-      width: 2vmin;
+      width: 2cqmin;
       height: 25%;
       background-color: #000000;
-      margin-left: -1vmin;
+      margin-left: -1cqmin;
       z-index: 5;
     }
     
     .minute-hand {
-      width: 1.2vmin;
+      width: 1.2cqmin;
       height: 38%;
       background-color: #000000;
-      margin-left: -0.6vmin;
+      margin-left: -0.6cqmin;
       z-index: 6;
     }
     
     .second-hand {
-      width: 0.5vmin;
+      width: 0.5cqmin;
       height: 43%;
       background-color: #ff0000;
-      margin-left: -0.25vmin;
+      margin-left: -0.25cqmin;
       z-index: 7;
     }
   </style>
 </head>
 <body>
 
-  <div class="clock">
-    <div class="center-nut"></div>
-    <div class="center-nut-red"></div>
-    
-    <!-- Chiffres -->
-    <div class="number n1"><span>1</span></div>
-    <div class="number n2"><span>2</span></div>
-    <div class="number n3"><span>3</span></div>
-    <div class="number n4"><span>4</span></div>
-    <div class="number n5"><span>5</span></div>
-    <div class="number n6"><span>6</span></div>
-    <div class="number n7"><span>7</span></div>
-    <div class="number n8"><span>8</span></div>
-    <div class="number n9"><span>9</span></div>
-    <div class="number n10"><span>10</span></div>
-    <div class="number n11"><span>11</span></div>
-    <div class="number n12"><span>12</span></div>
+  <div class="clock-container">
+    <div class="clock" id="clock-face">
+      <div class="center-nut"></div>
+      <div class="center-nut-red"></div>
+      
+      <!-- Chiffres -->
+      <div class="number n1"><span>1</span></div>
+      <div class="number n2"><span>2</span></div>
+      <div class="number n3"><span>3</span></div>
+      <div class="number n4"><span>4</span></div>
+      <div class="number n5"><span>5</span></div>
+      <div class="number n6"><span>6</span></div>
+      <div class="number n7"><span>7</span></div>
+      <div class="number n8"><span>8</span></div>
+      <div class="number n9"><span>9</span></div>
+      <div class="number n10"><span>10</span></div>
+      <div class="number n11"><span>11</span></div>
+      <div class="number n12"><span>12</span></div>
 
-    <!-- Aiguilles -->
-    <div class="hand hour-hand" id="hour"></div>
-    <div class="hand minute-hand" id="minute"></div>
-    <div class="hand second-hand" id="second"></div>
+      <!-- Aiguilles -->
+      <div class="hand hour-hand" id="hour"></div>
+      <div class="hand minute-hand" id="minute"></div>
+      <div class="hand second-hand" id="second"></div>
+    </div>
   </div>
 
   <script>
     const hourHand = document.getElementById('hour');
     const minuteHand = document.getElementById('minute');
     const secondHand = document.getElementById('second');
+    const clockFace = document.getElementById('clock-face');
+
+    // Génération automatique et dynamique des 60 tirets des minutes
+    for (let i = 0; i < 60; i++) {
+      const mark = document.createElement('div');
+      mark.classList.add('mark');
+      // Toutes les 5 minutes, on met un gros tiret, sinon un petit
+      if (i % 5 === 0) {
+        mark.classList.add('hour');
+      } else {
+        mark.classList.add('minute');
+      }
+      mark.style.transform = `rotate(${i * 6}deg)`;
+      clockFace.appendChild(mark);
+    }
 
     function updateClock() {
       const now = new Date();
