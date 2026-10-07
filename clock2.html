@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horloge Genially Fixe</title>
+  <style>
+    /* On force le contenu à occuper tout l'espace disponible de la boîte Genially */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: transparent; /* Fond transparent */
+      overflow: hidden;
+    }
+    
+    /* Le conteneur s'adapte à la taille de la boîte Genially, au format carré */
+    .clock-container {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* On définit cette zone comme référence pour les tailles des sous-éléments */
+      container-type: size; 
+    }
+    
+    .clock {
+      /* L'horloge va occuper 90% de la plus petite dimension du bloc Genially */
+      width: 90cqmin;
+      height: 90cqmin;
+      background-color: #ffffff;
+      border: 2.5cqmin solid #000000;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 1cqmin 3cqmin rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+    
+    .center-nut {
+      width: 3.5cqmin;
+      height: 3.5cqmin;
+      background-color: #000000;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    
+    .center-nut-red {
+      width: 1.5cqmin;
+      height: 1.5cqmin;
+      background-color: #ff0000;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 11;
+    }
+    
+    .number {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+      font-weight: bold;
+      font-size: 9cqmin; /* Taille indexée sur la taille réelle du conteneur */
+      color: #000000;
+      transform-origin: center;
+      box-sizing: border-box;
+    }
+    
+    .number span {
+      display: block;
+      padding-top: 3.5cqmin;
+    }
+    
+    /* Orientations des chiffres */
+    .n1  { transform: rotate(30deg); }  .n1 span  { transform: rotate(-30deg); }
+    .n2  { transform: rotate(60deg); }  .n2 span  { transform: rotate(-60deg); }
+    .n3  { transform: rotate(90deg); }  .n3 span  { transform: rotate(-90deg); }
+    .n4  { transform: rotate(120deg); } .n4 span  { transform: rotate(-120deg); }
+    .n5  { transform: rotate(150deg); } .n5 span  { transform: rotate(-150deg); }
+    .n6  { transform: rotate(180deg); } .n6 span  { transform: rotate(-180deg); }
+    .n7  { transform: rotate(210deg); } .n7 span  { transform: rotate(-210deg); }
+    .n8  { transform: rotate(240deg); } .n8 span  { transform: rotate(-240deg); }
+    .n9  { transform: rotate(270deg); } .n9 span  { transform: rotate(-270deg); }
+    .n10 { transform: rotate(300deg); } .n10 span { transform: rotate(-300deg); }
+    .n11 { transform: rotate(330deg); } .n11 span { transform: rotate(-330deg); }
+    .n12 { transform: rotate(0deg); }   .n12 span { transform: rotate(0deg); }
+
+    /* Aiguilles indexées sur la taille réelle du conteneur */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 1cqmin;
+    }
+    
+    .hour-hand {
+      width: 2cqmin;
+      height: 25%;
+      background-color: #000000;
+      margin-left: -1cqmin;
+      z-index: 5;
+    }
+    
+    .minute-hand {
+      width: 1.2cqmin;
+      height: 38%;
+      background-color: #000000;
+      margin-left: -0.6cqmin;
+      z-index: 6;
+    }
+    
+    .second-hand {
+      width: 0.5cqmin;
+      height: 43%;
+      background-color: #ff0000;
+      margin-left: -0.25cqmin;
+      z-index: 7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clock-container">
+    <div class="clock">
+      <div class="center-nut"></div>
+      <div class="center-nut-red"></div>
+      
+      <div class="number n1"><span>1</span></div>
+      <div class="number n2"><span>2</span></div>
+      <div class="number n3"><span>3</span></div>
+      <div class="number n4"><span>4</span></div>
+      <div class="number n5"><span>5</span></div>
+      <div class="number n6"><span>6</span></div>
+      <div class="number n7"><span>7</span></div>
+      <div class="number n8"><span>8</span></div>
+      <div class="number n9"><span>9</span></div>
+      <div class="number n10"><span>10</span></div>
+      <div class="number n11"><span>11</span></div>
+      <div class="number n12"><span>12</span></div>
+
+      <div class="hand hour-hand" id="hour"></div>
+      <div class="hand minute-hand" id="minute"></div>
+      <div class="hand second-hand" id="second"></div>
+    </div>
+  </div>
+
+  <script>
+    const hourHand = document.getElementById('hour');
+    const minuteHand = document.getElementById('minute');
+    const secondHand = document.getElementById('second');
+
+    function updateClock() {
+      const now = new Date();
+      
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      const secondsDegrees = (seconds / 60) * 360;
+      const minutesDegrees = (minutes / 60) * 360 + (seconds / 60) * 6;
+      const hoursDegrees = ((hours % 12) / 12) * 360 + (minutes / 60) * 30;
+
+      secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+      minuteHand.style.transform = `rotate(${minutesDegrees}deg)`;
+      hourHand.style.transform = `rotate(${hoursDegrees}deg)`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
