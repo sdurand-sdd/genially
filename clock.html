@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horloge Genially</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: transparent; /* Fond transparent pour s'adapter à Genially */
+      overflow: hidden;
+    }
+    .clock {
+      width: 90vw;
+      height: 90vw;
+      max-width: 400px;
+      max-height: 400px;
+      background-color: #ffffff;
+      border: 10px solid #000000;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .center-nut {
+      width: 14px;
+      height: 14px;
+      background-color: #000000;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    .center-nut-red {
+      width: 6px;
+      height: 6px;
+      background-color: #ff0000;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 11;
+    }
+    .number {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+      font-weight: bold;
+      font-size: 2.5rem;
+      color: #000000;
+      transform-origin: center;
+    }
+    /* Positionnement des chiffres */
+    .n1  { transform: rotate(30deg); }  .n1 span  { transform: rotate(-30deg); display: block; margin-top: 15px; }
+    .n2  { transform: rotate(60deg); }  .n2 span  { transform: rotate(-60deg); display: block; margin-top: 15px; }
+    .n3  { transform: rotate(90deg); }  .n3 span  { transform: rotate(-90deg); display: block; margin-top: 15px; }
+    .n4  { transform: rotate(120deg); } .n4 span  { transform: rotate(-120deg); display: block; margin-top: 15px; }
+    .n5  { transform: rotate(150deg); } .n5 span  { transform: rotate(-150deg); display: block; margin-top: 15px; }
+    .n6  { transform: rotate(180deg); } .n6 span  { transform: rotate(-180deg); display: block; margin-top: 15px; }
+    .n7  { transform: rotate(210deg); } .n7 span  { transform: rotate(-210deg); display: block; margin-top: 15px; }
+    .n8  { transform: rotate(240deg); } .n8 span  { transform: rotate(-240deg); display: block; margin-top: 15px; }
+    .n9  { transform: rotate(270deg); } .n9 span  { transform: rotate(-270deg); display: block; margin-top: 15px; }
+    .n10 { transform: rotate(30deg); } .n10 span { transform: rotate(-30deg); display: block; margin-top: 15px; } /* Ajusté en JS */
+    .n11 { transform: rotate(330deg); } .n11 span { transform: rotate(-330deg); display: block; margin-top: 15px; }
+    .n12 { transform: rotate(0deg); }   .n12 span { transform: rotate(0deg); display: block; margin-top: 15px; }
+
+    /* Aiguilles */
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+    }
+    .hour-hand {
+      width: 8px;
+      height: 25%;
+      background-color: #000000;
+      margin-left: -4px;
+      z-index: 5;
+    }
+    .minute-hand {
+      width: 5px;
+      height: 38%;
+      background-color: #000000;
+      margin-left: -2.5px;
+      z-index: 6;
+    }
+    .second-hand {
+      width: 2px;
+      height: 42%;
+      background-color: #ff0000;
+      margin-left: -1px;
+      z-index: 7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clock">
+    <div class="center-nut"></div>
+    <div class="center-nut-red"></div>
+    
+    <!-- Chiffres -->
+    <div class="number n1"><span>1</span></div>
+    <div class="number n2"><span>2</span></div>
+    <div class="number n3"><span>3</span></div>
+    <div class="number n4"><span>4</span></div>
+    <div class="number n5"><span>5</span></div>
+    <div class="number n6"><span>6</span></div>
+    <div class="number n7"><span>7</span></div>
+    <div class="number n8"><span>8</span></div>
+    <div class="number n9"><span>9</span></div>
+    <div class="number n10" style="transform: rotate(300deg);"><span style="transform: rotate(-300deg);">10</span></div>
+    <div class="number n11"><span>11</span></div>
+    <div class="number n12"><span>12</span></div>
+
+    <!-- Aiguilles -->
+    <div class="hand hour-hand" id="hour"></div>
+    <div class="hand minute-hand" id="minute"></div>
+    <div class="hand second-hand" id="second"></div>
+  </div>
+
+  <script>
+    const hourHand = document.getElementById('hour');
+    const minuteHand = document.getElementById('minute');
+    const secondHand = document.getElementById('second');
+
+    function updateClock() {
+      const now = new Date();
+      
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const hours = now.getHours();
+
+      // Calcul des angles précis pour une fluidité naturelle
+      const secondsDegrees = (seconds / 60) * 360;
+      const minutesDegrees = ((minutes / 60) * 360) + ((seconds / 60) * 6);
+      const hoursDegrees = ((hours % 12) / 12) * 360) + ((minutes / 60) * 30);
+
+      secondHand.style.transform = `rotate(${secondsDegrees}deg)`;
+      minuteHand.style.transform = `rotate(${minutesDegrees}deg)`;
+      hourHand.style.transform = `rotate(${hoursDegrees}deg)`;
+    }
+
+    // Mise à jour toutes les secondes
+    setInterval(updateClock, 1000);
+    updateClock(); // Appel initial immédiat
+  </script>
+</body>
+</html>
